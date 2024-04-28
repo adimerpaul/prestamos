@@ -129,6 +129,7 @@
       <path value="$PROJECT_DIR$/back/vendor/nette/utils" />
       <path value="$PROJECT_DIR$/back/vendor/nette/schema" />
       <path value="$PROJECT_DIR$/back/vendor/dflydev/dot-access-data" />
+      <path value="$PROJECT_DIR$/back/vendor/laravel/sanctum" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">
