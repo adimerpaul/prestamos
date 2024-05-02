@@ -1,4 +1,4 @@
-import { Notify } from 'quasar'
+import {Dialog, Notify} from 'quasar'
 export class Alert {
   static success (message) {
     Notify.create({
@@ -9,6 +9,23 @@ export class Alert {
       // icon: 'check',
       timeout: 1500,
       actions: [{ icon: 'close', color: 'white', size: 'sm' }]
+    })
+  }
+
+  static dialog (message) {
+    return Dialog.create({
+      title: 'Confirmación',
+      message,
+      // position: 'top',
+      color: 'positive',
+      ok: {
+        label: 'Aceptar',
+        color: 'positive'
+      },
+      cancel: {
+        label: 'Cancelar',
+        color: 'negative'
+      },
     })
   }
 

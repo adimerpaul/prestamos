@@ -24,10 +24,8 @@ class UserController extends Controller{
         }
     }
     public function me(Request $request){
-        $request->user()->currentAccessToken()->delete();
-        return response()->json([
-            'message' => 'Token eliminado',
-        ]);
+//        User::find($request->user()->id);
+        return response()->json($request->user());
     }
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();

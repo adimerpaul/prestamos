@@ -36,7 +36,7 @@
                     <q-item-label>Configuración</q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item clickable v-ripple>
+                <q-item clickable v-ripple @click="logout">
                   <q-item-section avatar>
                     <q-avatar icon="logout" />
                   </q-item-section>
@@ -67,7 +67,7 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-white text-bold">Bienvenido</q-item-label>
-                  <q-item-label caption class="text-white">Admin</q-item-label>
+                  <q-item-label caption class="text-white">{{ $store.user.name }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-item-label>
@@ -83,7 +83,7 @@
           </q-list>
         </q-header>
         <q-footer>
-          <q-item clickable dense v-ripple>
+          <q-item clickable dense v-ripple @click="logout">
             <q-item-section avatar>
               <q-avatar text-color="red" icon="logout" size="38px" />
             </q-item-section>
@@ -120,10 +120,20 @@ export default {
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
+    logout() {
+      this.$alert.dialog('¿Está seguro que desea cerrar sesión?').onOk(() => {
+        this.$axios.post('/logout').then(() => {
+          this.$store.isLogeed = false;
+          this.$store.user = {};
+          localStorage.removeItem('tokenPrestamos');
+          this.$router.push('/login');
+        })
+      })
+    },
   },
   computed: {
     rutaActual() {
-      return this.$route.path;
+      return this.$route.path
     },
   },
 };
