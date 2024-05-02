@@ -12,10 +12,42 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          <div class="text-primary text-bold">
+            Prestamos
+          </div>
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <div>
+          <q-btn flat dense round icon="o_account_circle" aria-label="Menu">
+            <q-menu>
+              <q-list>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar>
+                    <q-avatar icon="account_circle" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Perfil</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar>
+                    <q-avatar icon="settings" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Configuración</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar>
+                    <q-avatar icon="logout" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Cerrar Sesión</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -25,28 +57,42 @@
       :width="220"
       class="bg-primary text-white"
     >
-      <q-list>
-        <q-item-label class="q-pa-xs">
-          <q-item dense>
+      <q-layout>
+        <q-header>
+          <q-list>
+            <q-item-label class="q-pa-xs">
+              <q-item dense>
+                <q-item-section avatar>
+                  <q-img src="logo.png" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-white text-bold">Bienvenido</q-item-label>
+                  <q-item-label caption class="text-white">Admin</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-item-label>
+            <q-item clickable dense v-ripple v-for="link in essentialLinks" :key="link.title" :to="link.to" exact :class="`text-white ${rutaActual==link.to?'bg-secondary':''}`">
+              <q-item-section avatar>
+                <q-avatar  text-color="white" :icon="`${rutaActual==link.to?link.icon:'o_'+link.icon}`" :size="`${rutaActual==link.to?'45px':'38px'}`" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label :class="`text-white ${rutaActual==link.to?'text-bold':''}`">{{ link.title }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+          </q-list>
+        </q-header>
+        <q-footer>
+          <q-item clickable dense v-ripple>
             <q-item-section avatar>
-              <q-img src="logo.png" />
+              <q-avatar text-color="red" icon="logout" size="38px" />
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-white text-bold">Bienvenido</q-item-label>
-              <q-item-label caption class="text-white">Admin</q-item-label>
+              <q-item-label class="text-red text-bold">Cerrar Sesión</q-item-label>
             </q-item-section>
           </q-item>
-        </q-item-label>
-        <q-item clickable dense v-ripple v-for="link in essentialLinks" :key="link.title" :to="link.to" exact :class="`text-white ${rutaActual==link.to?'bg-secondary':''}`">
-          <q-item-section avatar>
-            <q-avatar  text-color="white" :icon="`${rutaActual==link.to?link.icon:'o_'+link.icon}`" :size="`${rutaActual==link.to?'45px':'38px'}`" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label :class="`text-white ${rutaActual==link.to?'text-bold':''}`">{{ link.title }}</q-item-label>
-          </q-item-section>
-        </q-item>
-
-      </q-list>
+        </q-footer>
+      </q-layout>
     </q-drawer>
 
     <q-page-container>
@@ -65,6 +111,8 @@ export default {
         { title: 'Prestamos', icon: 'shopping_bag', to: '/prestamos' },
         { title: 'Clientes', icon: 'person_search', to: '/clients' },
         { title: 'Deudores', icon: 'people', to: '/debtors' },
+        { title: 'Pagos', icon: 'payment', to: '/payments' },
+        { title: 'Prestamos Finalizados', icon: 'done_all', to: '/finished-loans' },
       ],
     };
   },
