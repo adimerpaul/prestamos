@@ -13,7 +13,7 @@
 
         <q-toolbar-title>
           <div class="text-primary text-bold">
-            Prestamos
+            {{title}}
           </div>
         </q-toolbar-title>
         <div>
@@ -134,6 +134,16 @@ export default {
   computed: {
     rutaActual() {
       return this.$route.path
+    },
+    title() {
+      const route = this.$route.path
+      if (route === '/') return 'Inicio'
+      if (route === '/prestamos') return 'Prestamos'
+      else if (route === '/clients') return 'Clientes'
+      else if (route === '/debtors') return 'Deudores'
+      else if (route === '/payments') return 'Pagos'
+      else if (route === '/finished-loans') return 'Prestamos Finalizados'
+      return 'Inicio'
     },
   },
 };
