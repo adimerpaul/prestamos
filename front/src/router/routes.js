@@ -4,8 +4,8 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'prestamos', component: () => import('pages/prestamos/PrestamosIndex.vue') },
+      { path: '', component: () => import('pages/IndexPage.vue'), meta: { requiresAuth: true } },
+      { path: 'prestamos', component: () => import('pages/prestamos/PrestamosIndex.vue'), meta: { requiresAuth: true } },
     ]
   },
   {
