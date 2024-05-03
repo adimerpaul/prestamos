@@ -15,6 +15,7 @@ class LoanSeeder extends Seeder
         DB::table('loans')->insert([
             'client_id' => 1,
             'date' => '2024-05-03',
+            'code' => '240001',
             'amount' => 25,
             'payments' => 3,
             'interest_rate' => 0.05,

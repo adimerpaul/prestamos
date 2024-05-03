@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients');
             $table->date('date');
+            $table->string('code');
             $table->decimal('amount', 8, 2);
             $table->integer('payments');
             $table->decimal('interest_rate', 8, 2);

@@ -28,7 +28,8 @@ class QuotaSeeder extends Seeder
                 'interest' => 1.25,
                 'custodial_fee' => 0.25,
                 'saldo' => 15,
-                'total_bs' => 150
+                'total_bs' => 150,
+                'client_id' => 1
             ],
             [
                 'loan_id' => 1,
@@ -37,7 +38,8 @@ class QuotaSeeder extends Seeder
                 'interest' => 1.25,
                 'custodial_fee' => 0.25,
                 'saldo' => 15,
-                'total_bs' => 150
+                'total_bs' => 150,
+                'client_id' => 1
             ],
             [
                 'loan_id' => 1,
@@ -46,7 +48,8 @@ class QuotaSeeder extends Seeder
                 'interest' => 1.25,
                 'custodial_fee' => 0.25,
                 'saldo' => 15,
-                'total_bs' => 150
+                'total_bs' => 150,
+                'client_id' => 1
             ],
         ]);
     }
