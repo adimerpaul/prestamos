@@ -10,4 +10,8 @@ class Client extends Model
     use HasFactory;
     protected $fillable = ['ci', 'name'];
     protected $hidden = ['created_at', 'updated_at'];
+
+    public function loans(){
+        return $this->hasMany(Loan::class);
+    }
 }

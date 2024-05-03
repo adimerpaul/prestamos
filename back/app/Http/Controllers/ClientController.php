@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller{
     public function index(){
-        return Client::all();
+        return Client::with('loans')->get();
     }
     public function store(Request $request){
         $client = Client::where('ci', $request->ci)->get();

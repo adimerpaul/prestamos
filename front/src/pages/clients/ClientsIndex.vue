@@ -9,6 +9,10 @@
             <q-btn flat dense icon="delete" @click="clientDelete(props.row.id)" >
               <q-tooltip>Eliminar</q-tooltip>
             </q-btn>
+<!--            historial de prestamos-->
+            <q-btn flat dense icon="history" @click="clientHistory(props.row)" >
+              <q-tooltip>Historial</q-tooltip>
+            </q-btn>
           </q-td>
       </template>
       <template v-slot:top-right>
@@ -47,6 +51,52 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="clienDialogHistory" persistent>
+      <q-card style="width: 500px;max-width: 90vw;">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Historial de Prestamos</div>
+          <q-space />
+          <q-btn flat dense icon="close" @click="clienDialogHistory = false" />
+        </q-card-section>
+        <q-card-section>
+          <div class="row">
+            <div class="col-6">
+              <div><b>Nombre:</b> {{ client.name }}</div>
+            </div>
+            <div class="col-6">
+              <div><b>CI:</b> {{ client.ci }}</div>
+            </div>
+            <div class="col-12">
+              <q-markup-table dense wrap-cells>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Cuotas</th>
+                    <th>Interes</th>
+<!--                    <th>Total</th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="loan in client.loans" :key="loan.id">
+                    <td>{{ loan.date }}</td>
+                    <td>{{ loan.amount }}</td>
+                    <td>{{ loan.payments }}</td>
+                    <td>{{ loan.interest_rate }}</td>
+<!--                    <td>{{ loan.total }}</td>-->
+                  </tr>
+                </tbody>
+              </q-markup-table>
+<!--              <pre>{{ client }}</pre>-->
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" v-close-popup :loading="loading" />
+<!--          <q-btn color="primary" label="Guardar" type="submit" :loading="loading" />-->
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 <!--    <pre>{{ clients }}</pre>-->
   </q-page>
 </template>
@@ -65,6 +115,7 @@ export default {
       clients: [],
       client: {},
       clientDialog: false,
+      clienDialogHistory: false,
       filter: ''
     }
   },
@@ -107,6 +158,10 @@ export default {
           this.loading = false
         })
       })
+    },
+    clientHistory (client) {
+      this.clienDialogHistory = true
+      this.client = {...client}
     },
     clientEdit (id) {
       this.clientDialog = true
