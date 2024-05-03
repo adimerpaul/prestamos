@@ -108,7 +108,7 @@ export default {
       leftDrawerOpen: false,
       essentialLinks: [
         { title: 'Inicio', icon: 'home', to: '/' },
-        { title: 'Prestamos', icon: 'shopping_bag', to: '/prestamos' },
+        { title: 'Prestamos', icon: 'account_balance', to: '/prestamos' },
         { title: 'Clientes', icon: 'person_search', to: '/clients' },
         { title: 'Deudores', icon: 'people', to: '/debtors' },
         { title: 'Pagos', icon: 'payment', to: '/payments' },
