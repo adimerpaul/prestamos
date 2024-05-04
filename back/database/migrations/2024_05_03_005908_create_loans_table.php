@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('client_id')->references('id')->on('clients');
             $table->date('date');
             $table->string('code');
+            $table->string('description')->nullable();
             $table->decimal('amount', 8, 2);
             $table->integer('payments');
             $table->decimal('interest_rate', 8, 2);

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->decimal('interest', 8, 2);
             $table->decimal('custodial_fee', 8, 2);
+            $table->decimal('capital', 8, 2);
             $table->decimal('saldo', 8, 2);
             $table->decimal('total_bs', 8, 2);
             $table->timestamps();
