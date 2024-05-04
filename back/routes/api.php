@@ -16,4 +16,5 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::delete('/clients/{id}', [\App\Http\Controllers\ClientController::class, 'delete']);
 
     Route::get('/loans', [\App\Http\Controllers\LoanController::class, 'index']);
+    Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
 });

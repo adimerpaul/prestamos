@@ -29,6 +29,13 @@ class LoanController extends Controller{
         }
         return $loans;
     }
+    public function nextId(){
+        $loan = Loan::orderBy('id', 'desc')->first();
+        if ($loan == null){
+            return 1;
+        }
+        return $loan->id + 1;
+    }
     public function store(Request $request){
         $request->validate([
             'amount' => 'required|numeric',

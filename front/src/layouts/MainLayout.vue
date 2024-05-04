@@ -63,7 +63,7 @@
             <q-item-label class="q-pa-xs">
               <q-item dense>
                 <q-item-section avatar>
-                  <q-img src="logo.png" />
+                  <q-img src="/logo.png" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-white text-bold">Bienvenido</q-item-label>

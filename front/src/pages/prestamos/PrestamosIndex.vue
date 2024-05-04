@@ -103,10 +103,9 @@ export default {
         });
     },
     show(row) {
-      this.$router.push({ name: 'prestamos-show', params: { id: row.id } });
     },
     create() {
-      this.$router.push({ name: 'prestamos-create' });
+      this.$router.push('/prestamos/create');
     },
     eliminar(row) {
       this.$q.dialog({
