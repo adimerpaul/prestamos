@@ -32,4 +32,13 @@ class ClientController extends Controller{
         $client->delete();
         return 204;
     }
+    public function search(Request $request){
+        $ci = $request->input('ci');
+        $client = Client::where('ci', $ci)->get();
+        if(count($client) == 0){
+            return '';
+        }else{
+            return $client;
+        }
+    }
 }

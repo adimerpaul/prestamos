@@ -14,6 +14,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/clients', [\App\Http\Controllers\ClientController::class, 'store']);
     Route::put('/clients/{id}', [\App\Http\Controllers\ClientController::class, 'update']);
     Route::delete('/clients/{id}', [\App\Http\Controllers\ClientController::class, 'delete']);
+    Route::get('/clients/search', [\App\Http\Controllers\ClientController::class, 'search']);
 
     Route::get('/loans', [\App\Http\Controllers\LoanController::class, 'index']);
     Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
