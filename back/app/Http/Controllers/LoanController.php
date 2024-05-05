@@ -9,6 +9,42 @@ use App\Models\Quota;
 use Illuminate\Http\Request;
 
 class LoanController extends Controller{
+
+    public function quotaAnular(Request $request, $id){
+        $quota = Quota::find($id);
+        $quotaSearch = Quota::where('loan_id', $quota->loan_id)
+            ->where('status', 'PAGADO')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($quotaSearch->id !== $quota->id){
+            return response()->json(['message' => 'No se puede anular una cuota que no sea la ultima'], 400);
+        }
+
+
+        $quota->status = 'PENDIENTE';
+        $quota->save();
+        $quotas = Quota::where('loan_id', $quota->loan_id)
+            ->orderBy('id', 'asc')
+            ->get();
+        $quotas->each(function($quota){
+            $quota->isLast = $this->isLastQuotaActive($quota);
+        });
+        return $quotas;
+    }
+    public function quotaPay(Request $request, $id){
+        $quota = Quota::find($id);
+        $quota->status = 'PAGADO';
+        $quota->save();
+        $quotas = Quota::where('loan_id', $quota->loan_id)
+//            ->where('status', 'PENDIENTE')
+            ->orderBy('id', 'asc')
+            ->get();
+        $quotas->each(function($quota){
+            $quota->isLast = $this->isLastQuotaActive($quota);
+        });
+        return $quotas;
+    }
     public function index(Request $request){
         $fechaIni = $request->input('fechaInit');
         $fechaFin = $request->input('fechaFin');
@@ -108,6 +144,10 @@ class LoanController extends Controller{
             ->where('status', 'PENDIENTE')
             ->orderBy('id', 'asc')
             ->first();
-        return $lastQuota->id == $quota->id;
+        if ($lastQuota == null){
+            return false;
+        }else{
+            return $lastQuota->id == $quota->id;
+        }
     }
 }

@@ -22,6 +22,9 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::put('/loansAnular/{id}', [\App\Http\Controllers\LoanController::class, 'loansAnular']);
     Route::get('/loans/show/{id}', [\App\Http\Controllers\LoanController::class, 'show']);
     Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
+
+    Route::put('/quotaPay/{id}', [\App\Http\Controllers\LoanController::class, 'quotaPay']);
+    Route::put('/quotaAnular/{id}', [\App\Http\Controllers\LoanController::class, 'quotaAnular']);
 });
 //compromiso
 Route::get('/compromiso/{loan_id}', [\App\Http\Controllers\ReportController::class, 'compromiso']);

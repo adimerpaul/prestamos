@@ -109,14 +109,17 @@
               <tr v-for="(cuota, index) in cuotas" :key="index">
                 <td class="text-right">{{ index + 1 }}</td>
                 <td class="text-right">
+                  <q-btn color="red" label="Anular" dense no-caps size="12px" class="text-bold" icon="o_block"
+                         @click="payAnular(cuota)" v-if="option === 'show' && cuota.status === 'PAGADO'"
+                         :loading="loading"></q-btn>
                   <q-btn color="positive" label="Pagar" dense no-caps size="12px" class="text-bold" icon="o_payment"
                          @click="pay(cuota)" v-if="option === 'show' && cuota.isLast && prestamo.status === 'PENDIENTE'"
+                         :loading="loading"
                   />
-<!--                  <pre>{{cuota.status}}</pre>-->
                 </td>
                 <td class="text-right">
                   <q-chip v-if="cuota.status === 'PENDIENTE'" dense color="orange" text-color="white" label="Pendiente" />
-                  <q-chip v-if="cuota.status === 'CANCELADO'" dense color="positive" text-color="white" label="Cancelado" />
+                  <q-chip v-if="cuota.status === 'PAGADO'" dense color="positive" text-color="white" label="Pagado" />
                   <q-chip v-if="cuota.status === 'ANULADO'" dense color="negative" text-color="white" label="Anulado" />
                 </td>
                 <td class="text-right">{{ cuota.amount }}</td>
@@ -130,6 +133,7 @@
               </tr>
               </tbody>
             </q-markup-table>
+            <pre>{{ cuotas }}</pre>
           </div>
         </div>
       </q-form>
@@ -175,6 +179,32 @@ export default {
   created() {
   },
   methods: {
+    payAnular (cuota) {
+      this.loading = true
+      this.$axios.put('quotaAnular/' + cuota.id)
+        .then(response => {
+          this.$alert.success('Cuota anulada con exito')
+          this.cuotas = response.data
+        })
+        .catch(error => {
+          this.$alert.error(error.response.data.message)
+        }).finally(() => {
+        this.loading = false
+      })
+    },
+    pay (cuota) {
+      this.loading = true
+      this.$axios.put('quotaPay/' + cuota.id)
+        .then(response => {
+          this.$alert.success('Cuota pagada con exito')
+          this.cuotas = response.data
+        })
+        .catch(error => {
+          this.$alert.error(error.response.data.message)
+        }).finally(() => {
+        this.loading = false
+      })
+    },
     descriptionUpdate (value) {
       if (this.option === 'show') {
         this.$axios.put('loanDescriptionUpdate/' + this.prestamo.id, { description: value })
