@@ -56,6 +56,31 @@
             <q-btn color="green" label="Guardar" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_save"
                    @click="loan" v-if="option === 'create'"
             />
+            <q-btn color="indigo" label="Opciones" :loading="loading" no-caps size="12px" class="text-bold" icon="o_settings"
+                   v-if="option === 'show'">
+              <q-menu>
+                <q-list>
+                  <q-item clickable v-ripple @click="printCompromiso">
+                    <q-item-section avatar>
+                      <q-icon name="o_print" />
+                    </q-item-section>
+                    <q-item-section>Compromiso de pago</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple @click="printPlan">
+                    <q-item-section avatar>
+                      <q-icon name="o_print" />
+                    </q-item-section>
+                    <q-item-section>Plan de pago</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple @click="anularPrestamo">
+                    <q-item-section avatar>
+                      <q-icon name="o_block" />
+                    </q-item-section>
+                    <q-item-section>Anular prestamo</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </div>
           <div class="col-12">
             <q-markup-table dense wrap-cells flat bordered :separator="'cell'">
@@ -143,6 +168,33 @@ export default {
   created() {
   },
   methods: {
+    printCompromiso () {
+      const url = import.meta.env.VITE_API_BACK + 'compromiso/' + this.prestamo.id
+      window.open(url, '_blank')
+    },
+    printPlan () {
+      this.$router.push('/prestamos/' + this.prestamo.id + '/plan')
+    },
+    anularPrestamo () {
+      this.$q.dialog({
+        title: 'Anular prestamo',
+        message: 'Esta seguro de anular el prestamo?',
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        this.loading = true
+        this.$axios.put('loans/' + this.prestamo.id, { status: 'ANULADO' })
+          .then(response => {
+            this.$alert.success('Prestamo anulado con exito')
+            this.$router.push('/prestamos')
+          })
+          .catch(error => {
+            this.$alert.error(error.response.data.message)
+          }).finally(() => {
+          this.loading = false
+        })
+      })
+    },
     formatDateDmy (date) {
       const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
       const dia = date.split('-')[2]

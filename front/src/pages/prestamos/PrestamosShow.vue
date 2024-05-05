@@ -1,7 +1,7 @@
 <template>
   <q-page class="bg-grey-3 q-pa-xs">
     <PrestamoForm :prestamoData="prestamo" :cuotasData="cuotas" :ciData="ci" :nameData="name" v-if="prestamo.id" :option="'show'" />
-    <pre>{{cuotas}}</pre>
+<!--    <pre>{{cuotas}}</pre>-->
   </q-page>
 </template>
 <script>
