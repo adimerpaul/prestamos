@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('capital', 8, 2);
             $table->decimal('saldo', 8, 2);
             $table->decimal('total_bs', 8, 2);
+            $table->string('status')->default('PENDIENTE');
             $table->timestamps();
         });
     }

@@ -1,6 +1,6 @@
 <template>
   <q-page class="bg-grey-3 q-pa-xs">
-    <PrestamoForm :prestamoData="prestamo" :cuotasData="cuotas" :ciData="ci" :nameData="name" />
+    <PrestamoForm :prestamoData="prestamo" :cuotasData="cuotas" :ciData="ci" :nameData="name" :option="'create'" v-if="prestamo.id" />
   </q-page>
 </template>
 <script>

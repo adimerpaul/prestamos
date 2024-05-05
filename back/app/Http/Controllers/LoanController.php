@@ -51,6 +51,7 @@ class LoanController extends Controller{
         $loan->description = $request->description;
         $loan->currency = $request->currency;
         $loan->dolar = $request->dolar;
+        $loan->status = 'PENDIENTE';
         $loan->save();
 
         foreach ($request->cuotas as $cuota){
@@ -64,6 +65,7 @@ class LoanController extends Controller{
             $quota->capital = $cuota['capital'];
             $quota->saldo = $cuota['saldo'];
             $quota->total_bs = $cuota['total_bs'];
+            $quota->status = 'PENDIENTE';
             $quota->save();
         }
 
@@ -81,5 +83,19 @@ class LoanController extends Controller{
             $client->save();
         }
         return $client;
+    }
+    public function show($id){
+        $loan = Loan::with(['client', 'quotas'])->find($id);
+        $loan->quotas->each(function($quota){
+            $quota->isLast = $this->isLastQuotaActive($quota);
+        });
+        return $loan;
+    }
+    public function isLastQuotaActive($quota){
+        $lastQuota = Quota::where('loan_id', $quota->loan_id)
+            ->where('status', 'PENDIENTE')
+            ->orderBy('id', 'asc')
+            ->first();
+        return $lastQuota->id == $quota->id;
     }
 }

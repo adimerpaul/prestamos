@@ -13,4 +13,8 @@ class Loan extends Model
     public function client(){
         return $this->belongsTo(Client::class);
     }
+    public function quotas(){
+        //order by
+        return $this->hasMany(Quota::class)->orderBy('id', 'asc');
+    }
 }

@@ -38,13 +38,12 @@
               <tr v-for="row in prestamos" :key="row.id">
                 <td>
                   <q-btn color="primary" icon="visibility" @click="show(row)" dense size="10px" label="Ver Detalle" no-caps />
-<!--                  <q-btn color="negative" icon="delete" @click="eliminar(row)" />-->
                 </td>
                 <td>{{ row.id }}</td>
                 <td>{{ row.date }}</td>
                 <td>{{ row.client?.name }}</td>
-                <td>{{ row.amount }}</td>
-                <td>{{ row.interest_rate }}</td>
+                <td class="text-right">{{ row.amount }}</td>
+                <td class="text-right">{{ row.interest_rate }}</td>
                 <td>
                   <q-chip label="Dolares" text-color="white" dense color="green-9"  v-if="row.currency == 'DOLARES'"/>
                   <q-chip label="Bolivianos" text-color="white" dense color="indigo-9"  v-if="row.currency == 'BOLIVIANOS'"/>
@@ -103,6 +102,7 @@ export default {
         });
     },
     show(row) {
+      this.$router.push('/prestamos/' + row.id);
     },
     create() {
       this.$router.push('/prestamos/create');

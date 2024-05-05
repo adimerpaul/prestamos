@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('custodial_fee', 8, 2);
             $table->string('currency');
             $table->decimal('dolar', 8, 2)->default(6.96);
+            $table->string('status')->default('PENDIENTE');
             $table->timestamps();
         });
     }

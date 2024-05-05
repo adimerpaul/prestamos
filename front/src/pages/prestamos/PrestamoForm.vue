@@ -25,6 +25,11 @@
           <div class="col-6 col-md-3 q-pa-xs">
             <q-input v-model="prestamo.dolar" outlined dense label="Dolar" type="number" step="0.01" />
           </div>
+          <div class="col-6 col-md-3 q-pa-xs flex flex-center">
+              <q-chip v-if="prestamo.status === 'PENDIENTE'" color="orange" text-color="white" label="Pendiente" />
+              <q-chip v-if="prestamo.status === 'CANCELADO'" color="positive" text-color="white" label="Cancelado" />
+              <q-chip v-if="prestamo.status === 'ANULADO'" color="negative" text-color="white" label="Anulado" />
+          </div>
           <div class="col-12 col-md-12 q-pa-xs">
             <q-input type="textarea" v-model="prestamo.description" outlined dense label="Descripcion" />
           </div>
@@ -44,11 +49,12 @@
           </div>
           <div class="col-6 col-md-2 flex flex-center">
             <q-btn color="primary" label="Calcular" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_calculate"
-                   @click="calculate" />
+                   @click="calculate" v-if="option === 'create'"
+            />
           </div>
           <div class="col-6 col-md-2 flex flex-center">
             <q-btn color="green" label="Guardar" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_save"
-                   @click="loan"
+                   @click="loan" v-if="option === 'create'"
             />
           </div>
           <div class="col-12">
@@ -56,6 +62,8 @@
               <thead>
               <tr>
                 <th><div class="text-bold">#</div></th>
+                <th><div class="text-bold">Opcion</div></th>
+                <th><div class="text-bold">#Estado</div></th>
                 <th><div class="text-bold">Saldo Inicial</div></th>
                 <th><div class="text-bold">Interes</div></th>
                 <th><div class="text-bold">Custodia</div></th>
@@ -69,6 +77,16 @@
               <tbody>
               <tr v-for="(cuota, index) in cuotas" :key="index">
                 <td class="text-right">{{ index + 1 }}</td>
+                <td class="text-right">
+                  <q-btn color="positive" label="Pagar" dense no-caps size="12px" class="text-bold" icon="o_payment"
+                         @click="pay(cuota)" v-if="option === 'show' && cuota.isLast"
+                  />
+                </td>
+                <td class="text-right">
+                  <q-chip v-if="cuota.status === 'PENDIENTE'" dense color="orange" text-color="white" label="Pendiente" />
+                  <q-chip v-if="cuota.status === 'CANCELADO'" dense color="positive" text-color="white" label="Cancelado" />
+                  <q-chip v-if="cuota.status === 'ANULADO'" dense color="negative" text-color="white" label="Anulado" />
+                </td>
                 <td class="text-right">{{ cuota.amount }}</td>
                 <td class="text-right">{{ cuota.interest }}</td>
                 <td class="text-right">{{ cuota.custodial_fee }}</td>
@@ -105,6 +123,10 @@ export default {
       required: true
     },
     nameData: {
+      type: String,
+      required: true
+    },
+    option: {
       type: String,
       required: true
     }
@@ -150,7 +172,7 @@ export default {
       })
         .then(response => {
           this.$alert.success('Prestamo guardado con exito')
-          this.$router.push('/prestamos')
+          this.$router.push('/prestamos/' + response.data.id)
         })
         .catch(error => {
           this.$alert.error(error.response.data.message)
