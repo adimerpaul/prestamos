@@ -27,8 +27,25 @@ class ReportController extends Controller{
             'currency' => $currency,
             'dateText' => $dateText
         ];
-//        error_log(json_encode($data));
         $pdf = Pdf::loadView('pdf.compromiso', $data);
         return $pdf->stream('compromiso.pdf');
+    }
+    public function plan($loan_id){
+        $loan = Loan::where('id', $loan_id)->with('client')->with('quotas')->first();
+        if ($loan->currency == 'DOLARES'){
+            $currency = 'DOLARES AMERICANOS';
+        }else{
+            $currency = 'BOLIVIANOS';
+        }
+        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $loanTextDate = explode('-', $loan->date);
+        $dateText = $loanTextDate[2] . ' de ' . $meses[(int)$loanTextDate[1] - 1] . ' de ' . $loanTextDate[0];
+        $data = [
+            'loan' => $loan,
+            'currency' => $currency,
+            'dateText' => $dateText
+        ];
+        $pdf = Pdf::loadView('pdf.plan', $data);
+        return $pdf->stream('plan.pdf');
     }
 }
