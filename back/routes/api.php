@@ -18,6 +18,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::get('/loans', [\App\Http\Controllers\LoanController::class, 'index']);
     Route::post('/loans', [\App\Http\Controllers\LoanController::class, 'store']);
+    Route::put('/loanDescriptionUpdate/{id}', [\App\Http\Controllers\LoanController::class, 'loanDescriptionUpdate']);
+    Route::put('/loansAnular/{id}', [\App\Http\Controllers\LoanController::class, 'loansAnular']);
     Route::get('/loans/show/{id}', [\App\Http\Controllers\LoanController::class, 'show']);
     Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
 });

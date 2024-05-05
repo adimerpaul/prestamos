@@ -26,24 +26,32 @@
             <thead>
               <tr>
                 <th>Acciones</th>
-                <th>Id</th>
+<!--                <th>Id</th>-->
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Monto</th>
-                <th>Interes</th>
+                <th>Pendiente</th>
+<!--                <th>Interes</th>-->
+                <th>Estado</th>
                 <th>Tipo</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in prestamos" :key="row.id">
                 <td>
-                  <q-btn color="primary" icon="visibility" @click="show(row)" dense size="10px" label="Ver Detalle" no-caps />
+                  <q-btn color="primary" icon="visibility" @click="show(row)" dense size="10px" label="Detalle" no-caps />
                 </td>
-                <td>{{ row.id }}</td>
+<!--                <td>{{ row.id }}</td>-->
                 <td>{{ row.date }}</td>
                 <td>{{ row.client?.name }}</td>
                 <td class="text-right">{{ row.amount }}</td>
-                <td class="text-right">{{ row.interest_rate }}</td>
+                <td class="text-right"></td>
+<!--                <td class="text-right">{{ row.interest_rate }}</td>-->
+                <td>
+                  <q-chip label="Pendiente" text-color="white" dense color="orange"  v-if="row.status == 'PENDIENTE'"/>
+                  <q-chip label="Pagado" text-color="white" dense color="green"  v-if="row.status == 'PAGADO'"/>
+                  <q-chip label="Anulado" text-color="white" dense color="red"  v-if="row.status == 'ANULADO'"/>
+                </td>
                 <td>
                   <q-chip label="Dolares" text-color="white" dense color="green-9"  v-if="row.currency == 'DOLARES'"/>
                   <q-chip label="Bolivianos" text-color="white" dense color="indigo-9"  v-if="row.currency == 'BOLIVIANOS'"/>

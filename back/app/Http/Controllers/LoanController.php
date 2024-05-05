@@ -71,6 +71,18 @@ class LoanController extends Controller{
 
         return $loan;
     }
+    public function loanDescriptionUpdate(Request $request, $id){
+        $loan = Loan::find($id);
+        $loan->description = $request->description;
+        $loan->save();
+        return $loan;
+    }
+    public function loansAnular($id){
+        $loan = Loan::find($id);
+        $loan->status = 'ANULADO';
+        $loan->save();
+        return $loan;
+    }
     public function upsertCLient($request){
         $client = Client::where('ci', $request->input('ci'))->first();
         if ($client == null){

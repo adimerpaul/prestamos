@@ -36,7 +36,7 @@
 
 </p>
 <p class="justify line-height">
-    <span class="underline bold"> CUARTA.-</span>En caso de incumplimiento y por así convenir nuestros intereses ACREEDOR y
+    <span class="underline bold"> CUARTA.-</span> En caso de incumplimiento y por así convenir nuestros intereses ACREEDOR y
 
     DEUDOR, se procederá a la venta de la garantía ofrecida para el préstamo conforme dispone el
     Art. 593 y 595 inc. I y II del Código Civil, producto de la venta se procederá a la cancelación

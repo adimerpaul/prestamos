@@ -9,21 +9,23 @@
             </div>
           </div>
           <div class="col-6 col-md-3 q-pa-xs">
-            <q-input v-model="prestamo.date" outlined dense label="Fecha" type="date" />
+            <q-input v-model="prestamo.date" outlined dense label="Fecha" type="date" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="ci" outlined dense label="C.I." @update:modelValue="clientSearch" debounce="500"
-                     :rules="[val => !!val || 'La cedula de identidad es requerida']" />
+                     :rules="[val => !!val || 'La cedula de identidad es requerida']" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-6 q-pa-xs">
             <q-input v-model="name" outlined dense label="Nombre"
-                     :rules="[val => !!val || 'El nombre es requerido']" />
+                     :rules="[val => !!val || 'El nombre es requerido']" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-3 q-pa-xs">
-            <q-select v-model="prestamo.currency" outlined dense label="Moneda" :options="['DOLARES', 'BOLIVIANOS']" />
+            <q-select v-model="prestamo.currency" outlined dense label="Moneda" :options="['DOLARES', 'BOLIVIANOS']"
+                      :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-3 q-pa-xs">
-            <q-input v-model="prestamo.dolar" outlined dense label="Dolar" type="number" step="0.01" />
+            <q-input v-model="prestamo.dolar" outlined dense label="Dolar" type="number" step="0.01"
+                      :rules="[val => !!val || 'El dolar es requerido', val => val > 0 || 'El dolar debe ser mayor a 0']" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-3 q-pa-xs flex flex-center">
               <q-chip v-if="prestamo.status === 'PENDIENTE'" color="orange" text-color="white" label="Pendiente" />
@@ -31,21 +33,25 @@
               <q-chip v-if="prestamo.status === 'ANULADO'" color="negative" text-color="white" label="Anulado" />
           </div>
           <div class="col-12 col-md-12 q-pa-xs">
-            <q-input type="textarea" v-model="prestamo.description" outlined dense label="Descripcion" />
+            <q-input type="textarea" v-model="prestamo.description" outlined dense label="Descripcion" @update:modelValue="descriptionUpdate" :debounce="1000" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="prestamo.amount" outlined dense label="Monto" type="number"
-                     :rules="[val => !!val || 'El monto es requerido', val => val > 0 || 'El monto debe ser mayor a 0']" />
+                     :rules="[val => !!val || 'El monto es requerido', val => val > 0 || 'El monto debe ser mayor a 0']"
+                      :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
-            <q-input v-model="prestamo.interest_rate" outlined dense label="Interes %" type="number" />
+            <q-input v-model="prestamo.interest_rate" outlined dense label="Interes %" type="number"
+                      :rules="[val => !!val || 'El interes es requerido', val => val > 0 || 'El interes debe ser mayor a 0']" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
-            <q-input v-model="prestamo.custodial_fee" outlined dense label="Custodia %" type="number" />
+            <q-input v-model="prestamo.custodial_fee" outlined dense label="Custodia %" type="number"
+                      :rules="[val => !!val || 'La custodia es requerida', val => val > 0 || 'La custodia debe ser mayor a 0']" :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="prestamo.payments" outlined dense label="Pagos" type="number"
-                     :rules="[val => !!val || 'El numero de pagos es requerido', val => val > 0 || 'El numero de pagos debe ser mayor a 0']" />
+                     :rules="[val => !!val || 'El numero de pagos es requerido', val => val > 0 || 'El numero de pagos debe ser mayor a 0']"
+                      :readonly="option === 'show'" />
           </div>
           <div class="col-6 col-md-2 flex flex-center">
             <q-btn color="primary" label="Calcular" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_calculate"
@@ -72,7 +78,7 @@
                     </q-item-section>
                     <q-item-section>Plan de pago</q-item-section>
                   </q-item>
-                  <q-item clickable v-ripple @click="anularPrestamo">
+                  <q-item clickable v-ripple @click="anularPrestamo" v-if="prestamo.status === 'PENDIENTE'">
                     <q-item-section avatar>
                       <q-icon name="o_block" />
                     </q-item-section>
@@ -104,8 +110,9 @@
                 <td class="text-right">{{ index + 1 }}</td>
                 <td class="text-right">
                   <q-btn color="positive" label="Pagar" dense no-caps size="12px" class="text-bold" icon="o_payment"
-                         @click="pay(cuota)" v-if="option === 'show' && cuota.isLast"
+                         @click="pay(cuota)" v-if="option === 'show' && cuota.isLast && prestamo.status === 'PENDIENTE'"
                   />
+<!--                  <pre>{{cuota.status}}</pre>-->
                 </td>
                 <td class="text-right">
                   <q-chip v-if="cuota.status === 'PENDIENTE'" dense color="orange" text-color="white" label="Pendiente" />
@@ -168,6 +175,14 @@ export default {
   created() {
   },
   methods: {
+    descriptionUpdate (value) {
+      if (this.option === 'show') {
+        this.$axios.put('loanDescriptionUpdate/' + this.prestamo.id, { description: value })
+          .then(response => {
+            // this.$alert.success('Descripcion actualizada con exito')
+          })
+      }
+    },
     printCompromiso () {
       const url = import.meta.env.VITE_API_BACK + 'compromiso/' + this.prestamo.id
       window.open(url, '_blank')
@@ -176,14 +191,9 @@ export default {
       this.$router.push('/prestamos/' + this.prestamo.id + '/plan')
     },
     anularPrestamo () {
-      this.$q.dialog({
-        title: 'Anular prestamo',
-        message: 'Esta seguro de anular el prestamo?',
-        cancel: true,
-        persistent: true
-      }).onOk(() => {
+      this.$alert.confirm('Esta seguro de anular el prestamo?').onOk(() => {
         this.loading = true
-        this.$axios.put('loans/' + this.prestamo.id, { status: 'ANULADO' })
+        this.$axios.put('loansAnular/' + this.prestamo.id, { status: 'ANULADO' })
           .then(response => {
             this.$alert.success('Prestamo anulado con exito')
             this.$router.push('/prestamos')
