@@ -29,3 +29,4 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 //compromiso
 Route::get('/compromiso/{loan_id}', [\App\Http\Controllers\ReportController::class, 'compromiso']);
 Route::get('/plan/{loan_id}', [\App\Http\Controllers\ReportController::class, 'plan']);
+Route::get('/printPago/{pago_id}', [\App\Http\Controllers\ReportController::class, 'printPago']);

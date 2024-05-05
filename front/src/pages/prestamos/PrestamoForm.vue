@@ -119,6 +119,8 @@
                 </td>
                 <td class="text-right">
                   <q-chip v-if="cuota.status === 'PENDIENTE'" dense color="orange" text-color="white" label="Pendiente" />
+                  <q-btn v-if="cuota.status === 'PAGADO'" dense flat color="indigo" round size="12px" class="text-bold"
+                         icon="o_print" @click="printPago(cuota)" />
                   <q-chip v-if="cuota.status === 'PAGADO'" dense color="positive" text-color="white" label="Pagado" />
                   <q-chip v-if="cuota.status === 'ANULADO'" dense color="negative" text-color="white" label="Anulado" />
                 </td>
@@ -133,7 +135,7 @@
               </tr>
               </tbody>
             </q-markup-table>
-            <pre>{{ cuotas }}</pre>
+<!--            <pre>{{ cuotas }}</pre>-->
           </div>
         </div>
       </q-form>
@@ -179,6 +181,10 @@ export default {
   created() {
   },
   methods: {
+    printPago (cuota) {
+      const url = import.meta.env.VITE_API_BACK + 'printPago/' + cuota.id
+      window.open(url, '_blank')
+    },
     payAnular (cuota) {
       this.loading = true
       this.$axios.put('quotaAnular/' + cuota.id)
