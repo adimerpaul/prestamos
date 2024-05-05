@@ -21,3 +21,5 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/loans/show/{id}', [\App\Http\Controllers\LoanController::class, 'show']);
     Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
 });
+//compromiso
+Route::get('/compromiso/{loan_id}', [\App\Http\Controllers\ReportController::class, 'compromiso']);
