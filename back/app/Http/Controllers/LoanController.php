@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\Loan;
+use App\Models\Quota;
 use Illuminate\Http\Request;
 
 class LoanController extends Controller{
@@ -37,18 +39,47 @@ class LoanController extends Controller{
         return $loan->id + 1;
     }
     public function store(Request $request){
-        $request->validate([
-            'amount' => 'required|numeric',
-            'term' => 'required|numeric',
-            'rate' => 'required|numeric',
-        ]);
-        $amount = $request->input('amount');
-        $term = $request->input('term');
-        $rate = $request->input('rate');
-        $rate = $rate / 100;
-        $monthly_rate = $rate / 12;
-        $monthly_payment = $amount * $monthly_rate / (1 - (1 + $monthly_rate) ** -$term);
-        $total_payment = $monthly_payment * $term;
-        return view('loan', ['monthly_payment' => $monthly_payment, 'total_payment' => $total_payment]);
+        $client = $this->upsertCLient($request);
+        $loan = new Loan();
+        $loan->client_id = $client->id;
+        $loan->date = $request->date;
+        $loan->code = '';
+        $loan->amount = $request->amount;
+        $loan->payments = $request->payments;
+        $loan->interest_rate = $request->interest_rate;
+        $loan->custodial_fee = $request->custodial_fee;
+        $loan->description = $request->description;
+        $loan->currency = $request->currency;
+        $loan->dolar = $request->dolar;
+        $loan->save();
+
+        foreach ($request->cuotas as $cuota){
+            $quota = new Quota();
+            $quota->loan_id = $loan->id;
+            $quota->client_id = $client->id;
+            $quota->date = $cuota['date'];
+            $quota->amount = $cuota['amount'];
+            $quota->interest = $cuota['interest'];
+            $quota->custodial_fee = $cuota['custodial_fee'];
+            $quota->capital = $cuota['capital'];
+            $quota->saldo = $cuota['saldo'];
+            $quota->total_bs = $cuota['total_bs'];
+            $quota->save();
+        }
+
+        return $loan;
+    }
+    public function upsertCLient($request){
+        $client = Client::where('ci', $request->input('ci'))->first();
+        if ($client == null){
+            $client = new Client();
+            $client->ci = $request->input('ci');
+            $client->name = $request->input('name');
+            $client->save();
+        }else{
+            $client->name = $request->input('name');
+            $client->save();
+        }
+        return $client;
     }
 }

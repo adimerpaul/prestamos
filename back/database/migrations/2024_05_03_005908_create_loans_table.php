@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('interest_rate', 8, 2);
             $table->decimal('custodial_fee', 8, 2);
             $table->string('currency');
+            $table->decimal('dolar', 8, 2)->default(6.96);
             $table->timestamps();
         });
     }
