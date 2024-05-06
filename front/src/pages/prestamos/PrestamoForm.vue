@@ -29,7 +29,7 @@
           </div>
           <div class="col-6 col-md-3 q-pa-xs flex flex-center">
               <q-chip v-if="prestamo.status === 'PENDIENTE'" color="orange" text-color="white" label="Pendiente" />
-              <q-chip v-if="prestamo.status === 'CANCELADO'" color="positive" text-color="white" label="Cancelado" />
+              <q-chip v-if="prestamo.status === 'PAGADO'" color="positive" text-color="white" label="Pagado" />
               <q-chip v-if="prestamo.status === 'ANULADO'" color="negative" text-color="white" label="Anulado" />
           </div>
           <div class="col-12 col-md-12 q-pa-xs">
@@ -190,7 +190,8 @@ export default {
       this.$axios.put('quotaAnular/' + cuota.id)
         .then(response => {
           this.$alert.success('Cuota anulada con exito')
-          this.cuotas = response.data
+          this.cuotas = response.data.quotas
+          this.prestamo.status = response.data.status
         })
         .catch(error => {
           this.$alert.error(error.response.data.message)
@@ -203,7 +204,8 @@ export default {
       this.$axios.put('quotaPay/' + cuota.id)
         .then(response => {
           this.$alert.success('Cuota pagada con exito')
-          this.cuotas = response.data
+          this.cuotas = response.data.quotas
+          this.prestamo.status = response.data.status
         })
         .catch(error => {
           this.$alert.error(error.response.data.message)
@@ -224,7 +226,8 @@ export default {
       window.open(url, '_blank')
     },
     printPlan () {
-      this.$router.push('/prestamos/' + this.prestamo.id + '/plan')
+      const url = import.meta.env.VITE_API_BACK + 'plan/' + this.prestamo.id
+      window.open(url, '_blank')
     },
     anularPrestamo () {
       this.$alert.confirm('Esta seguro de anular el prestamo?').onOk(() => {

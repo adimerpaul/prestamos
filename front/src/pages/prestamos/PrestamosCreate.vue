@@ -17,17 +17,17 @@ export default {
         id: null,
         client_id: '',
         date: moment().format('YYYY-MM-DD'),
-        amount: '25',
-        payments: '3',
+        amount: '',
+        payments: '',
         interest_rate: 5,
         custodial_fee: 1,
-        description: 'Prestamo de prueba',
+        description: '',
         currency: 'DOLARES',
         dolar: 6.96
       },
       cuotas: [],
-      ci: '1234567',
-      name: 'Adimer Chambi'
+      ci: '',
+      name: ''
     }
   },
   created() {

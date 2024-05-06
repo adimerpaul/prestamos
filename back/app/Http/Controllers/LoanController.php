@@ -30,20 +30,50 @@ class LoanController extends Controller{
         $quotas->each(function($quota){
             $quota->isLast = $this->isLastQuotaActive($quota);
         });
-        return $quotas;
+
+        $loanStatus = 'PAGADO';
+        $quotas->each(function($quota) use (&$loanStatus){
+            if ($quota->status == 'PENDIENTE'){
+                $loanStatus = 'PENDIENTE';
+            }
+        });
+        $loan = Loan::find($quota->loan_id);
+        $loan->status = $loanStatus;
+        $loan->save();
+
+        return response()->json([
+            'quotas' => $quotas,
+            'status' => $loanStatus
+        ]);
     }
     public function quotaPay(Request $request, $id){
         $quota = Quota::find($id);
         $quota->status = 'PAGADO';
         $quota->save();
+
         $quotas = Quota::where('loan_id', $quota->loan_id)
-//            ->where('status', 'PENDIENTE')
             ->orderBy('id', 'asc')
             ->get();
+
         $quotas->each(function($quota){
             $quota->isLast = $this->isLastQuotaActive($quota);
         });
-        return $quotas;
+
+        $loanStatus = 'PAGADO';
+        $quotas->each(function($quota) use (&$loanStatus){
+            if ($quota->status == 'PENDIENTE'){
+                $loanStatus = 'PENDIENTE';
+            }
+        });
+        $loan = Loan::find($quota->loan_id);
+        $loan->status = $loanStatus;
+        $loan->save();
+
+
+        return response()->json([
+            'quotas' => $quotas,
+            'status' => $loanStatus
+        ]);
     }
     public function index(Request $request){
         $fechaIni = $request->input('fechaInit');
