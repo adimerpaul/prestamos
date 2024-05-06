@@ -98,4 +98,19 @@ class ClientController extends Controller{
             ->get();
         return $loans;
     }
+    public function dashboard(){
+//        this.prestamos = response.data.prestamos;
+//        this.clientes = response.data.clientes;
+//        this.deudores = response.data.deudores;
+//        this.pagos = response.data.pagos;
+//        this.prestamosFinalizados = response.data.prestamosFinalizados;
+
+        return [
+            'prestamos' => Loan::where('status', 'PENDIENTE')->count(),
+            'clientes' => Client::count(),
+            'deudores' => Quota::where('status', 'PENDIENTE')->count(),
+            'pagos' => Quota::where('status', 'PAGADO')->count(),
+            'prestamosFinalizados' => Loan::where('status', 'PAGADO')->count()
+        ];
+    }
 }
