@@ -16,7 +16,8 @@ class Quota extends Model{
         'custodial_fee',
         'capital',
         'saldo',
-        'total_bs'
+        'total_bs',
+        'status'
     ];
 
     public function loan(){

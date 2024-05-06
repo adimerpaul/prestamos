@@ -26,7 +26,7 @@
             <thead>
               <tr>
                 <th>Acciones</th>
-<!--                <th>Id</th>-->
+                <th>Id</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Monto</th>
@@ -41,7 +41,7 @@
                 <td>
                   <q-btn color="primary" icon="visibility" @click="show(row)" dense size="10px" label="Detalle" no-caps />
                 </td>
-<!--                <td>{{ row.id }}</td>-->
+                <td>{{ row.id }}</td>
                 <td>{{ row.date }}</td>
                 <td>{{ row.client?.name }}</td>
                 <td class="text-right">{{ row.amount }}</td>
@@ -72,8 +72,8 @@ export default {
   name: 'PrestamosIndex',
   data () {
     return {
-      fechaInit: moment().startOf('isoWeek').format('YYYY-MM-DD'),
-      fechaFin: moment().endOf('isoWeek').format('YYYY-MM-DD'),
+      fechaInit: moment().startOf('month').format('YYYY-MM-DD'),
+      fechaFin: moment().endOf('month').format('YYYY-MM-DD'),
       prestamos: [],
       loading: false,
       filter: '',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Loan;
+use App\Models\Quota;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller{
@@ -40,5 +41,61 @@ class ClientController extends Controller{
         }else{
             return $client;
         }
+    }
+    public function debtors(Request $request){
+        $fechaInit = $request->input('fechaInit');
+        $fechaFin = $request->input('fechaFin');
+        $search = $request->input('search');
+
+
+        $quotas = Quota::where('status', 'PENDIENTE')
+//            ->where('date', '<=', now())
+            ->where('date', '>=', $fechaInit)
+            ->where('date', '<=', $fechaFin)
+            ->whereHas('loan', function($query) use ($search){
+                $query->whereHas('client', function($query) use ($search){
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('ci', 'like', '%'.$search.'%');
+                });
+            })
+            ->with('loan.client')
+            ->get();
+        return $quotas;
+    }
+    public function payments(Request $request){
+        $fechaInit = $request->input('fechaInit');
+        $fechaFin = $request->input('fechaFin');
+        $search = $request->input('search');
+
+
+        $quotas = Quota::where('status', 'PAGADO')
+//            ->where('date', '<=', now())
+            ->where('date', '>=', $fechaInit)
+            ->where('date', '<=', $fechaFin)
+            ->whereHas('loan', function($query) use ($search){
+                $query->whereHas('client', function($query) use ($search){
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('ci', 'like', '%'.$search.'%');
+                });
+            })
+            ->with('loan.client')
+            ->get();
+        return $quotas;
+    }
+    public function FinishedLoan(Request $request){
+        $fechaInit = $request->input('fechaInit');
+        $fechaFin = $request->input('fechaFin');
+        $search = $request->input('search');
+
+        $loans = Loan::where('status', 'PAGADO')
+            ->where('date', '>=', $fechaInit)
+            ->where('date', '<=', $fechaFin)
+            ->whereHas('client', function($query) use ($search){
+                $query->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('ci', 'like', '%'.$search.'%');
+            })
+            ->with('client')
+            ->get();
+        return $loans;
     }
 }
