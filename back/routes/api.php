@@ -40,4 +40,5 @@ Route::get('/printPago/{pago_id}', [\App\Http\Controllers\ReportController::clas
 
 Route::get('/test', function(){
     $books = DB::table('select * from latinas.books');
+    return response()->json($books);
 });
