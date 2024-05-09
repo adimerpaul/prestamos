@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
@@ -36,3 +37,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::get('/compromiso/{loan_id}', [\App\Http\Controllers\ReportController::class, 'compromiso']);
 Route::get('/plan/{loan_id}', [\App\Http\Controllers\ReportController::class, 'plan']);
 Route::get('/printPago/{pago_id}', [\App\Http\Controllers\ReportController::class, 'printPago']);
+
+Route::get('/test', function(){
+    $books = DB::table('select * from latinas.books');
+});
