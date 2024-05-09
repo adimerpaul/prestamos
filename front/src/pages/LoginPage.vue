@@ -62,6 +62,7 @@ export default {
         this.$store.user = response.data.user
         this.$store.isLogged = true
         localStorage.setItem('tokenPrestamos', response.data.token)
+        this.$axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
         this.$router.push('/')
       }).catch(error => {
         this.$alert.error(error.response.data.message)
@@ -89,7 +90,7 @@ export default {
 
 .dark-overlay {
   /* Agrega las propiedades de la imagen de fondo */
-  background-image: url('./fondoLogin.jpg');
+  background-image: url('./../fondoLogin.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
