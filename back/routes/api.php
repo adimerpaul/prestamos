@@ -39,6 +39,6 @@ Route::get('/plan/{loan_id}', [\App\Http\Controllers\ReportController::class, 'p
 Route::get('/printPago/{pago_id}', [\App\Http\Controllers\ReportController::class, 'printPago']);
 
 Route::get('/test', function(){
-    $books = DB::table('select * from latinas.books');
+    $books = DB::table('select * from books');
     return response()->json($books);
 });
