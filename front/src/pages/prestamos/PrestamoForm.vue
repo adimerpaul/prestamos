@@ -152,7 +152,7 @@
               </tr>
               </tbody>
             </q-markup-table>
-            <pre>{{ cuotas }}</pre>
+<!--            <pre>{{ cuotas }}</pre>-->
           </div>
         </div>
       </q-form>
