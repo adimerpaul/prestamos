@@ -42,6 +42,12 @@
             <div class="col-12">
               <q-input v-model="client.ci" label="CI" outlined dense :rules="[val => !!val || 'Campo requerido']" />
             </div>
+            <div class="col-12">
+              <q-input v-model="client.address" label="Dirección" outlined dense />
+            </div>
+            <div class="col-12">
+              <q-input v-model="client.phone" label="Teléfono" outlined dense />
+            </div>
           </div>
         </q-card-section>
         <q-card-actions align="right">
@@ -109,7 +115,9 @@ export default {
         { name: 'option', label: 'Opciones', align: 'left', field: row => row.option },
         { name: 'id', label: 'ID', align: 'left', field: row => row.id },
         { name: 'name', label: 'Nombre', align: 'left', field: row => row.name },
-        { name: 'ci', label: 'CI', align: 'left', field: row => row.ci }
+        { name: 'ci', label: 'CI', align: 'left', field: row => row.ci },
+        { name: 'address', label: 'Dirección', align: 'left', field: row => row.address },
+        { name: 'phone', label: 'Teléfono', align: 'left', field: row => row.phone }
       ],
       loading: false,
       clients: [],
