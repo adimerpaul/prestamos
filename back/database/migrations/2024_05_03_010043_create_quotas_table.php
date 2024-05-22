@@ -25,6 +25,15 @@ return new class extends Migration
             $table->decimal('saldo', 8, 2);
             $table->decimal('total_bs', 8, 2);
             $table->string('status')->default('PENDIENTE');
+
+            $table->decimal('capital_paid', 8, 2)->default(0);
+            $table->decimal('interest_paid', 8, 2)->default(0);
+            $table->decimal('custodial_fee_paid', 8, 2)->default(0);
+            $table->decimal('total_bs_paid', 8, 2)->default(0);
+            $table->decimal('total_paid', 8, 2)->default(0);
+            $table->integer('days')->default(0);
+            $table->date('date_paid')->nullable();
+
             $table->timestamps();
         });
     }

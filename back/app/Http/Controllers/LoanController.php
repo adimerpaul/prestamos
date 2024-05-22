@@ -6,10 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Loan;
 use App\Models\Quota;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class LoanController extends Controller{
+    public function daysCuota($id){
+        $loan = Loan::find($id);
+        $hoy = Carbon::today();
+        $loanDate = Carbon::parse($loan->date);
+        $dias = $loanDate->diffInDays($hoy);
+        $interDays = $loan->interest_rate / 30;
 
+        $quotas = Quota::where('loan_id', $id)
+            ->orderBy('id', 'asc')
+            ->get();
+        foreach ($quotas as $quota){
+            if ($quota->status == 'PAGADO'){
+                $quotaDate = Carbon::parse($quota->date);
+                $dias = $quotaDate->diffInDays($hoy);
+            }
+        }
+        if ($dias < 30) {
+            $dias = 30;
+        }
+
+        return response()->json([
+            'days' => $dias,
+            'interDay' => $interDays
+        ]);
+    }
     public function quotaAnular(Request $request, $id){
         $quota = Quota::find($id);
         $quotaSearch = Quota::where('loan_id', $quota->loan_id)
@@ -31,24 +56,45 @@ class LoanController extends Controller{
             $quota->isLast = $this->isLastQuotaActive($quota);
         });
 
-        $loanStatus = 'PAGADO';
-        $quotas->each(function($quota) use (&$loanStatus){
-            if ($quota->status == 'PENDIENTE'){
-                $loanStatus = 'PENDIENTE';
-            }
-        });
+//        $loanStatus = 'PAGADO';
+//        $quotas->each(function($quota) use (&$loanStatus){
+//            if ($quota->status == 'PENDIENTE'){
+//                $loanStatus = 'PENDIENTE';
+//            }
+//        });
+//        $loan = Loan::find($quota->loan_id);
+//        $loan->status = $loanStatus;
+//        $loan->save();
+
         $loan = Loan::find($quota->loan_id);
-        $loan->status = $loanStatus;
+        $loan->saldo = $loan->saldo + $quota->capital_paid;
+        $loan->amortization = $loan->amortization - $quota->capital_paid;
         $loan->save();
+        if ($loan->saldo <= 0){
+            $loan->status = 'PAGADO';
+            $loan->save();
+        }else{
+            $loan->status = 'PENDIENTE';
+            $loan->save();
+        }
 
         return response()->json([
             'quotas' => $quotas,
-            'status' => $loanStatus
+            'status' => $loan->status,
+            'saldo' => $loan->saldo,
+            'amortization' => $loan->amortization
         ]);
     }
     public function quotaPay(Request $request, $id){
         $quota = Quota::find($id);
         $quota->status = 'PAGADO';
+        $quota->capital_paid = $request->capital;
+        $quota->interest_paid = $request->interest;
+        $quota->custodial_fee_paid = $request->custodial;
+        $quota->total_bs_paid =$request->total_bs;
+        $quota->total_paid = $request->total;
+        $quota->days = $request->days;
+        $quota->date_paid = date('Y-m-d');
         $quota->save();
 
         $quotas = Quota::where('loan_id', $quota->loan_id)
@@ -59,20 +105,34 @@ class LoanController extends Controller{
             $quota->isLast = $this->isLastQuotaActive($quota);
         });
 
-        $loanStatus = 'PAGADO';
-        $quotas->each(function($quota) use (&$loanStatus){
-            if ($quota->status == 'PENDIENTE'){
-                $loanStatus = 'PENDIENTE';
-            }
-        });
         $loan = Loan::find($quota->loan_id);
-        $loan->status = $loanStatus;
+        $loan->saldo = $loan->saldo - $request->capital;
+        $loan->amortization = $loan->amortization + $request->capital;
         $loan->save();
+        if ($loan->saldo <= 0){
+            $loan->status = 'PAGADO';
+            $loan->save();
+        }else{
+            $loan->status = 'PENDIENTE';
+            $loan->save();
+        }
+
+//        $loanStatus = 'PAGADO';
+//        $quotas->each(function($quota) use (&$loanStatus){
+//            if ($quota->status == 'PENDIENTE'){
+//                $loanStatus = 'PENDIENTE';
+//            }
+//        });
+//        $loan = Loan::find($quota->loan_id);
+//        $loan->status = $loanStatus;
+//        $loan->save();
 
 
         return response()->json([
             'quotas' => $quotas,
-            'status' => $loanStatus
+            'status' => $loan->status,
+            'saldo' => $loan->saldo,
+            'amortization' => $loan->amortization
         ]);
     }
     public function index(Request $request){

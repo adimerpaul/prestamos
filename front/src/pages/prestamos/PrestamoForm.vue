@@ -124,7 +124,7 @@
                          @click="payAnular(cuota)" v-if="option === 'show' && cuota.status === 'PAGADO'"
                          :loading="loading"></q-btn>
                   <q-btn color="positive" label="Pagar" dense no-caps size="12px" class="text-bold" icon="o_payment"
-                         @click="pay(cuota)" v-if="option === 'show' && cuota.isLast && prestamo.status === 'PENDIENTE'"
+                         @click="payDialogShow(cuota)" v-if="option === 'show' && cuota.isLast && prestamo.status === 'PENDIENTE'"
                          :loading="loading"
                   />
                 </td>
@@ -135,22 +135,82 @@
                   <q-chip v-if="cuota.status === 'PAGADO'" dense color="positive" text-color="white" label="Pagado" />
                   <q-chip v-if="cuota.status === 'ANULADO'" dense color="negative" text-color="white" label="Anulado" />
                 </td>
-                <td class="text-subtitle2 text-right">{{ cuota.amount }}</td>
-                <td class="text-subtitle2 text-right">{{ cuota.interest }}</td>
-                <td class="text-subtitle2 text-right">{{ cuota.custodial_fee }}</td>
-                <td class="text-subtitle2 text-right">{{ cuota.capital }}</td>
-                <td class="text-subtitle2 text-right">{{ ( parseFloat(cuota.interest) + parseFloat(cuota.custodial_fee) + parseFloat(cuota.capital) ).toFixed(2) }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.amount }} <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.days}}d</b></td>
+                <td class="text-subtitle2 text-right">{{ cuota.interest }} <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.interest_paid}}</b></td>
+                <td class="text-subtitle2 text-right">{{ cuota.custodial_fee }} <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.custodial_fee_paid}}</b></td>
+                <td class="text-subtitle2 text-right text-bold">{{ cuota.capital }} <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.capital_paid}}</b></td>
+                <td class="text-subtitle2 text-right">{{ ( parseFloat(cuota.interest) + parseFloat(cuota.custodial_fee) + parseFloat(cuota.capital) ).toFixed(2) }} <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.total_bs_paid}}</b></td>
                 <td class="text-subtitle2 text-right">{{ cuota.saldo }}</td>
-                <td class="text-subtitle2 text-right">{{ cuota.total_bs }}</td>
-                <td class="text-subtitle2" @click="changeDatePay(cuota)">{{ formatDateDmy(cuota.date) }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.total_bs }}
+                  <b class="text-red" v-if="cuota.status=='PAGADO'">{{ cuota.total_bs_paid }}</b>
+                </td>
+                <td class="text-subtitle2" @click="changeDatePay(cuota)">
+                  {{ formatDateDmy(cuota.date) }}
+                  <br>
+                  <b class="text-red" v-if="cuota.status=='PAGADO'">{{ formatDateDmy(cuota.date_paid) }}</b>
+                </td>
               </tr>
               </tbody>
             </q-markup-table>
-<!--            <pre>{{ cuotas }}</pre>-->
+            <pre>{{ cuotas }}</pre>
           </div>
         </div>
       </q-form>
     </q-card-section>
+    <q-dialog v-model="payDialog" persistent>
+      <q-card style="width: 750px;max-width: 100vw;">
+        <q-card-section>
+          <q-form @submit.prevent="submit">
+            <div class="row">
+              <div class="col-12 col-md-12 q-pa-xs">
+                <div class="text-h6 text-red flex flex-center" style="line-height: 1;">
+                  <b>Pagar cuota</b>
+                </div>
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <q-input v-model="cuota.capital" outlined dense label="Capital" type="number"/>
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <q-input v-model="days" outlined dense label="Dias de atraso" type="number"/>
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <div class="text-red flex flex-center" style="line-height: 1;">
+                  <b>Interes</b>
+                </div>
+                {{interest}}
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <div class="text-red flex flex-center" style="line-height: 1;">
+                  <b>Custodia</b>
+                </div>
+                {{ custodial }}
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <div class="text-red flex flex-center" style="line-height: 1;">
+                  <b>Total</b>
+                </div>
+                <div class="text-bold">
+                  {{ totalPay }}
+                </div>
+              </div>
+              <div class="col-12 col-md-2 q-pa-xs">
+                <div class="text-red flex flex-center" style="line-height: 1;">
+                  <b>Total Bs</b>
+                </div>
+                {{totalBs}}
+              </div>
+            </div>
+          </q-form>
+<!--          <pre>{{cuota}}</pre>-->
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="primary" label="Pagar" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_payment"
+                 @click="pay" />
+          <q-btn color="negative" label="Cancelar" type="submit" :loading="loading" no-caps size="12px" class="text-bold" icon="o_block"
+                 @click="payDialog = false" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>
 <script>
@@ -187,7 +247,10 @@ export default {
       cuotas: this.cuotasData,
       ci: this.ciData,
       name: this.nameData,
-      payDialog: false
+      payDialog: false,
+      cuota: {},
+      days: 0,
+      interDay: 0
     }
   },
   created() {
@@ -230,6 +293,8 @@ export default {
           this.$alert.success('Cuota anulada con exito')
           this.cuotas = response.data.quotas
           this.prestamo.status = response.data.status
+          this.prestamo.saldo = response.data.saldo
+          this.prestamo.amortization = response.data.amortization
         })
         .catch(error => {
           this.$alert.error(error.response.data.message)
@@ -237,13 +302,34 @@ export default {
         this.loading = false
       })
     },
-    pay (cuota) {
+    payDialogShow (cuota) {
       this.loading = true
-      this.$axios.put('quotaPay/' + cuota.id)
+      this.$axios.get('daysCuota/' + this.prestamo.id).then(response => {
+        this.days = response.data.days
+        this.interDay = response.data.interDay
+        this.payDialog = true
+        this.cuota = {...cuota}
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    pay () {
+      this.loading = true
+      this.$axios.put('quotaPay/' + this.cuota.id,{
+        capital: this.cuota.capital,
+        days: this.days,
+        interest: this.interest,
+        custodial: this.custodial,
+        total: this.totalPay,
+        total_bs: this.totalBs
+      })
         .then(response => {
           this.$alert.success('Cuota pagada con exito')
           this.cuotas = response.data.quotas
           this.prestamo.status = response.data.status
+          this.prestamo.saldo = response.data.saldo
+          this.prestamo.amortization = response.data.amortization
+          this.payDialog = false
         })
         .catch(error => {
           this.$alert.error(error.response.data.message)
@@ -373,6 +459,24 @@ export default {
       })
     },
     submit () {
+    }
+  },
+  computed: {
+    interest () {
+      return parseFloat(this.interDay*this.days*this.prestamo.saldo/100).toFixed(2)
+    },
+    custodial () {
+      return parseFloat(this.prestamo.saldo * this.prestamo.custodial_fee / 100).toFixed(2)
+    },
+    totalPay () {
+      return (parseFloat(this.cuota.capital) + this.interDay*this.days*this.prestamo.saldo/100 + this.prestamo.saldo * this.prestamo.custodial_fee / 100).toFixed(2)
+    },
+    totalBs () {
+      if (this.prestamo.currency === 'DOLARES') {
+        return ((parseFloat(this.cuota.capital) + this.interDay*this.days*this.prestamo.saldo/100 + this.prestamo.saldo * this.prestamo.custodial_fee / 100) * this.prestamo.dolar).toFixed(2)
+      }else{
+        return (parseFloat(this.cuota.capital) + this.interDay*this.days*this.prestamo.saldo/100 + this.prestamo.saldo * this.prestamo.custodial_fee / 100).toFixed(2)
+      }
     }
   }
 }

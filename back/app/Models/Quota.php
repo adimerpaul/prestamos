@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quota extends Model{
     use HasFactory;
+
     protected $fillable = [
         'loan_id',
         'client_id',
@@ -17,7 +18,13 @@ class Quota extends Model{
         'capital',
         'saldo',
         'total_bs',
-        'status'
+        'status',
+        'capital_paid',
+        'interest_paid',
+        'custodial_fee_paid',
+        'total_bs_paid',
+        'days',
+        'date_paid'
     ];
 
     public function loan(){
