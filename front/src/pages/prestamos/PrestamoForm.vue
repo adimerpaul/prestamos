@@ -9,7 +9,9 @@
             </div>
           </div>
           <div class="col-6 col-md-3 q-pa-xs">
-            <q-input v-model="prestamo.date" outlined dense label="Fecha" type="date" :readonly="option === 'show'" />
+<!--            :readonly="option === 'show'"-->
+            <q-input v-model="prestamo.date" outlined dense label="Fecha" type="date"
+                      @update:modelValue="changeDate" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="ci" outlined dense label="C.I." @update:modelValue="clientSearch" debounce="500"
@@ -23,14 +25,22 @@
             <q-select v-model="prestamo.currency" outlined dense label="Moneda" :options="['DOLARES', 'BOLIVIANOS']"
                       :readonly="option === 'show'" />
           </div>
-          <div class="col-6 col-md-3 q-pa-xs">
+          <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="prestamo.dolar" outlined dense label="Dolar" type="number" step="0.01"
                       :rules="[val => !!val || 'El dolar es requerido', val => val > 0 || 'El dolar debe ser mayor a 0']" :readonly="option === 'show'" />
           </div>
-          <div class="col-6 col-md-3 q-pa-xs flex flex-center">
+          <div class="col-6 col-md-2 q-pa-xs text-center">
               <q-chip v-if="prestamo.status === 'PENDIENTE'" color="orange" text-color="white" label="Pendiente" />
               <q-chip v-if="prestamo.status === 'PAGADO'" color="positive" text-color="white" label="Pagado" />
               <q-chip v-if="prestamo.status === 'ANULADO'" color="negative" text-color="white" label="Anulado" />
+          </div>
+          <div class="col-6 col-md-2 q-pa-xs">
+            <q-input v-model="prestamo.interest_rate" outlined dense label="Interes %" type="number"
+                     :rules="[val => !!val || 'El interes es requerido', val => val > 0 || 'El interes debe ser mayor a 0']" :readonly="option === 'show'" />
+          </div>
+          <div class="col-6 col-md-2 q-pa-xs">
+            <q-input v-model="prestamo.custodial_fee" outlined dense label="Custodia %" type="number"
+                     :rules="[val => !!val || 'La custodia es requerida', val => val > 0 || 'La custodia debe ser mayor a 0']" :readonly="option === 'show'" />
           </div>
           <div class="col-12 col-md-12 q-pa-xs">
             <q-input type="textarea" v-model="prestamo.description" outlined dense label="Descripcion" @update:modelValue="descriptionUpdate" :debounce="1000" />
@@ -38,16 +48,17 @@
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="prestamo.amount" outlined dense label="Monto" type="number"
                      :rules="[val => !!val || 'El monto es requerido', val => val > 0 || 'El monto debe ser mayor a 0']"
-                      :readonly="option === 'show'" />
+                      :readonly="option === 'show'" bg-color="orange" label-color="white" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
-            <q-input v-model="prestamo.interest_rate" outlined dense label="Interes %" type="number"
-                      :rules="[val => !!val || 'El interes es requerido', val => val > 0 || 'El interes debe ser mayor a 0']" :readonly="option === 'show'" />
+            <q-input v-model="prestamo.saldo" outlined dense label="Saldo" type="number"
+                     :readonly="true" bg-color="red-5" label-color="white" />
           </div>
           <div class="col-6 col-md-2 q-pa-xs">
-            <q-input v-model="prestamo.custodial_fee" outlined dense label="Custodia %" type="number"
-                      :rules="[val => !!val || 'La custodia es requerida', val => val > 0 || 'La custodia debe ser mayor a 0']" :readonly="option === 'show'" />
+            <q-input v-model="prestamo.amortization" outlined dense label="Amortizacion" type="number"
+                     :readonly="true" bg-color="green-5" label-color="white" />
           </div>
+
           <div class="col-6 col-md-2 q-pa-xs">
             <q-input v-model="prestamo.payments" outlined dense label="Pagos" type="number"
                      :rules="[val => !!val || 'El numero de pagos es requerido', val => val > 0 || 'El numero de pagos debe ser mayor a 0']"
@@ -89,12 +100,12 @@
             </q-btn>
           </div>
           <div class="col-12">
-            <q-markup-table dense wrap-cells flat bordered :separator="'cell'">
-              <thead>
+            <q-markup-table dense wrap-cells flat bordered :separator="'cell'" class="bg-grey-3">
+              <thead class="bg-primary text-white">
               <tr>
                 <th><div class="text-bold">#</div></th>
                 <th><div class="text-bold">Opcion</div></th>
-                <th><div class="text-bold">#Estado</div></th>
+                <th><div class="text-bold">Estado</div></th>
                 <th><div class="text-bold">Saldo Inicial</div></th>
                 <th><div class="text-bold">Interes</div></th>
                 <th><div class="text-bold">Custodia</div></th>
@@ -107,8 +118,8 @@
               </thead>
               <tbody>
               <tr v-for="(cuota, index) in cuotas" :key="index">
-                <td class="text-right">{{ index + 1 }}</td>
-                <td class="text-right">
+                <td class="text-subtitle2 text-right">{{ index + 1 }}</td>
+                <td class="text-subtitle2 text-right">
                   <q-btn color="red" label="Anular" dense no-caps size="12px" class="text-bold" icon="o_block"
                          @click="payAnular(cuota)" v-if="option === 'show' && cuota.status === 'PAGADO'"
                          :loading="loading"></q-btn>
@@ -117,21 +128,21 @@
                          :loading="loading"
                   />
                 </td>
-                <td class="text-right">
+                <td class="text-subtitle2 text-right">
                   <q-chip v-if="cuota.status === 'PENDIENTE'" dense color="orange" text-color="white" label="Pendiente" />
                   <q-btn v-if="cuota.status === 'PAGADO'" dense flat color="indigo" round size="12px" class="text-bold"
                          icon="o_print" @click="printPago(cuota)" />
                   <q-chip v-if="cuota.status === 'PAGADO'" dense color="positive" text-color="white" label="Pagado" />
                   <q-chip v-if="cuota.status === 'ANULADO'" dense color="negative" text-color="white" label="Anulado" />
                 </td>
-                <td class="text-right">{{ cuota.amount }}</td>
-                <td class="text-right">{{ cuota.interest }}</td>
-                <td class="text-right">{{ cuota.custodial_fee }}</td>
-                <td class="text-right">{{ cuota.capital }}</td>
-                <td class="text-right">{{ ( parseFloat(cuota.interest) + parseFloat(cuota.custodial_fee) + parseFloat(cuota.capital) ).toFixed(2) }}</td>
-                <td class="text-right">{{ cuota.saldo }}</td>
-                <td class="text-right">{{ cuota.total_bs }}</td>
-                <td>{{ formatDateDmy(cuota.date) }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.amount }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.interest }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.custodial_fee }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.capital }}</td>
+                <td class="text-subtitle2 text-right">{{ ( parseFloat(cuota.interest) + parseFloat(cuota.custodial_fee) + parseFloat(cuota.capital) ).toFixed(2) }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.saldo }}</td>
+                <td class="text-subtitle2 text-right">{{ cuota.total_bs }}</td>
+                <td class="text-subtitle2" @click="changeDatePay(cuota)">{{ formatDateDmy(cuota.date) }}</td>
               </tr>
               </tbody>
             </q-markup-table>
@@ -176,11 +187,38 @@ export default {
       cuotas: this.cuotasData,
       ci: this.ciData,
       name: this.nameData,
+      payDialog: false
     }
   },
   created() {
   },
   methods: {
+    changeDatePay (cuota) {
+      this.$q.dialog({
+        title: 'Cambiar fecha de pago',
+        message: 'Seleccione la nueva fecha de pago',
+        prompt: {
+          model: cuota.date,
+          type: 'date'
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        this.$axios.put('quotaDateUpdate/' + cuota.id, { date: data })
+          .then(response => {
+            // this.$alert.success('Fecha actualizada con exito')
+            this.cuotas = response.data.quotas
+          })
+      })
+    },
+    changeDate (value) {
+      if (this.option === 'show') {
+        this.$axios.put('loanDateUpdate/' + this.prestamo.id, { date: value })
+          .then(response => {
+            // this.$alert.success('Fecha actualizada con exito')
+          })
+      }
+    },
     printPago (cuota) {
       const url = import.meta.env.VITE_API_BACK + 'printPago/' + cuota.id
       window.open(url, '_blank')

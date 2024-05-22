@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Loan extends Model
 {
     use HasFactory;
-    protected $fillable = ['client_id', 'date', 'amount', 'payments', 'description', 'interest_rate', 'custodial_fee', 'currency', 'dolar'];
+    protected $fillable = ['client_id', 'date', 'amount', 'payments', 'description', 'interest_rate', 'custodial_fee', 'currency', 'dolar', 'saldo', 'amortization', 'status'];
     protected $hidden = ['created_at', 'updated_at'];
     public function client(){
         return $this->belongsTo(Client::class);

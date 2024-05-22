@@ -104,6 +104,41 @@ class LoanController extends Controller{
         }
         return $loan->id + 1;
     }
+    public function loanDateUpdate(Request $request, $id){
+        $loan = Loan::find($id);
+        $loan->date = $request->date;
+        $loan->save();
+        return $loan;
+    }
+
+    public function quotaDateUpdate(Request $request, $id){
+        $quota = Quota::find($id);
+        $quota->date = $request->date;
+        $quota->save();
+
+
+        $quotas = Quota::where('loan_id', $quota->loan_id)
+            ->orderBy('id', 'asc')
+            ->get();
+        $quotas->each(function($quota){
+            $quota->isLast = $this->isLastQuotaActive($quota);
+        });
+
+        $loanStatus = 'PAGADO';
+        $quotas->each(function($quota) use (&$loanStatus){
+            if ($quota->status == 'PENDIENTE'){
+                $loanStatus = 'PENDIENTE';
+            }
+        });
+        $loan = Loan::find($quota->loan_id);
+        $loan->status = $loanStatus;
+        $loan->save();
+
+        return response()->json([
+            'quotas' => $quotas,
+            'status' => $loanStatus
+        ]);
+    }
     public function store(Request $request){
         $client = $this->upsertCLient($request);
         $loan = new Loan();
@@ -111,6 +146,8 @@ class LoanController extends Controller{
         $loan->date = $request->date;
         $loan->code = '';
         $loan->amount = $request->amount;
+        $loan->saldo = $request->amount;
+        $loan->amortization = 0;
         $loan->payments = $request->payments;
         $loan->interest_rate = $request->interest_rate;
         $loan->custodial_fee = $request->custodial_fee;

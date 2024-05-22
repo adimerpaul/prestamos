@@ -23,9 +23,11 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::put('/loansAnular/{id}', [\App\Http\Controllers\LoanController::class, 'loansAnular']);
     Route::get('/loans/show/{id}', [\App\Http\Controllers\LoanController::class, 'show']);
     Route::get('/loans/nextId', [\App\Http\Controllers\LoanController::class, 'nextId']);
+    Route::put('/loanDateUpdate/{id}', [\App\Http\Controllers\LoanController::class, 'loanDateUpdate']);
 
     Route::put('/quotaPay/{id}', [\App\Http\Controllers\LoanController::class, 'quotaPay']);
     Route::put('/quotaAnular/{id}', [\App\Http\Controllers\LoanController::class, 'quotaAnular']);
+    Route::put('/quotaDateUpdate/{id}', [\App\Http\Controllers\LoanController::class, 'quotaDateUpdate']);
 
     Route::get('/debtors', [\App\Http\Controllers\ClientController::class, 'debtors']);
     Route::get('/payments', [\App\Http\Controllers\ClientController::class, 'payments']);
@@ -38,7 +40,7 @@ Route::get('/compromiso/{loan_id}', [\App\Http\Controllers\ReportController::cla
 Route::get('/plan/{loan_id}', [\App\Http\Controllers\ReportController::class, 'plan']);
 Route::get('/printPago/{pago_id}', [\App\Http\Controllers\ReportController::class, 'printPago']);
 
-Route::get('/test', function(){
-    $books = DB::select('select * from books');
-    return response()->json($books);
-});
+//Route::get('/test', function(){
+//    $books = DB::select('select * from books');
+//    return response()->json($books);
+//});

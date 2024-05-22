@@ -11,22 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('loans', function (Blueprint $table) {
+        Schema::create('pays', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients');
+            $table->unsignedBigInteger('loan_id');
+            $table->foreign('loan_id')->references('id')->on('loans');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->date('date');
-            $table->string('code');
-            $table->string('description')->nullable();
-            $table->decimal('amount', 8, 2);
-            $table->decimal('saldo', 8, 2);
             $table->decimal('amortization', 8, 2);
-            $table->integer('payments');
-            $table->decimal('interest_rate', 8, 2);
+            $table->decimal('interest', 8, 2);
             $table->decimal('custodial_fee', 8, 2);
-            $table->string('currency');
-            $table->decimal('dolar', 8, 2)->default(6.96);
-            $table->string('status')->default('PENDIENTE');
+            $table->decimal('total_bs', 8, 2);
             $table->timestamps();
         });
     }
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('loans');
+        Schema::dropIfExists('pays');
     }
 };
